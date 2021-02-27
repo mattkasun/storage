@@ -34,16 +34,26 @@ func CreateStore(dir, key string) *Storage {
 
 }
 
-func GetUsers() (Users, error) {
-	var users Users
-	found, err := store.Get("Users", &users)
+func (s *Storage) Save(item interface{}) bool {
+	//existing, err := s.Get()
+	//fmt.Println(existing, err)
+	//existing = append(existing, item)
+	err := s.store.Set(s.key, item)
 	if err != nil {
-		fmt.Println("error in GetUser")
-		return Users{}, err
+		return false
+	}
+	return true
+}
+
+func (s *Storage) Get() (interface{}, error) {
+	value := new(interface{})
+	found, err := s.store.Get(s.key, value)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
 	}
 	if !found {
-		return Users{}, errors.New("Users not found")
+		return nil, errors.New("not found")
 	}
-	return users, nil
-
+	return *value, nil
 }
