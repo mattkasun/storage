@@ -1,4 +1,4 @@
-package user
+package storage
 
 import (
 	"errors"
@@ -8,28 +8,29 @@ import (
 	"github.com/philippgille/gokv/file"
 )
 
-type Users []User
-
-type User struct {
-	Name string
-	Pass string
+type Storage struct {
+	store gokv.Store
+	dir   string
+	key   string
 }
 
-var store gokv.Store
-
-func init() {
-	fmt.Println("vim-go")
+func CreateStore(dir, key string) *Storage {
 
 	options := file.DefaultOptions
-	options.Directory = "data"
+	options.Directory = dir
 
 	// Create client
 	client, err := file.NewStore(options)
 	if err != nil {
 		panic(err)
 	}
-	store = client
 	defer client.Close()
+	instance := &Storage{
+		store: client,
+		dir:   dir,
+		key:   key,
+	}
+	return instance
 
 }
 
